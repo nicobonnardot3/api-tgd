@@ -32,16 +32,10 @@ export const createUser = async (req, res) => {
 		})
 		if (!dbUser) return res.status(500).send({ error: "Internal server error" })
 
-		const session_id = await prisma.sessions.create({
-			data: {
-				user_id: dbUser.id,
-				expiration_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-				session_id: randomUUID()
-			},
-			select: {
-				session_id: true
+		const session_id =
+			(await prisma.$queryRaw`INSERT INTO tgd.sessions (session_id, user_id, expiration_date) VALUES (UUID(), dbUser.id, new Date() + 30 * 24 * 60 * 60 * 1000) RETURNING session_id`) as {
+				session_id: string
 			}
-		})
 
 		const token = jwt.sign(
 			{
