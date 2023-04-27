@@ -1,7 +1,7 @@
 import { User, prisma } from "../index"
 import jwt from "jsonwebtoken"
 
-export const login = async (req, res) => {
+export async function login(req, res) {
 	if (!process.env.TOKEN_KEY) throw new Error("TOKEN_KEY is not defined")
 	if (!req.body) return res.status(400).json({ error: "No body provided" })
 	try {
@@ -21,8 +21,10 @@ export const login = async (req, res) => {
 		})
 		if (!dbUser) return res.status(400).json({ error: "User does not exist" })
 
+		const expireDate = new Date(new Date().valueOf() + 30 * 24 * 60 * 60 * 1000)
+
 		const session_id =
-			(await prisma.$queryRaw`INSERT INTO tgd.sessions (session_id, user_id, expiration_date) VALUES (UUID(), dbUser.id, new Date() + 30 * 24 * 60 * 60 * 1000) RETURNING session_id`) as {
+			(await prisma.$queryRaw`INSERT INTO sessions (session_id, user_id, expiration_date) VALUES (UUID(), ${dbUser.id}, ${expireDate}) RETURNING session_id`) as {
 				session_id: string
 			}
 

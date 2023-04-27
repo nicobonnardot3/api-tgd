@@ -1,8 +1,8 @@
-import { createHash, randomUUID } from "crypto"
+import { createHash } from "crypto"
 import { prisma, User } from "../index"
 import jwt from "jsonwebtoken"
 
-export const createUser = async (req, res) => {
+export async function register(req, res) {
 	if (!process.env.TOKEN_KEY) throw new Error("TOKEN_KEY is not defined")
 	try {
 		if (!req.body) return res.status(400).send({ error: "No body provided" })
@@ -32,8 +32,10 @@ export const createUser = async (req, res) => {
 		})
 		if (!dbUser) return res.status(500).send({ error: "Internal server error" })
 
+		const expireDate = new Date(new Date().valueOf() + 30 * 24 * 60 * 60 * 1000)
+
 		const session_id =
-			(await prisma.$queryRaw`INSERT INTO tgd.sessions (session_id, user_id, expiration_date) VALUES (UUID(), dbUser.id, new Date() + 30 * 24 * 60 * 60 * 1000) RETURNING session_id`) as {
+			(await prisma.$queryRaw`INSERT INTO sessions (session_id, user_id, expiration_date) VALUES (UUID(), ${dbUser.id}, ${expireDate}) RETURNING session_id`) as {
 				session_id: string
 			}
 

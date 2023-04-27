@@ -8,24 +8,25 @@ datasource db {
 }
 
 model sessions {
-  user_id         Int
   session_id      String   @db.VarChar(255)
   expiration_date DateTime @db.Date
+  user_id         Int
+
   @@id([user_id, session_id])
 }
 
 model upgrades {
   user_id      Int   @id
-  damage       Int?  @default(0)
-  attack_speed Int?  @default(0)
+  damage       Int  @default(0)
+  attack_speed Int  @default(0)
   turret_cost  Int   @default(0)
   users        users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "upgrades_ibfk_1")
 }
 
 model users {
   id         Int       @id @default(autoincrement())
-  username   String    @db.VarChar(255) @unique
-  email      String    @db.VarChar(255) @unique
+  username   String    @unique @db.VarChar(255)
+  email      String    @unique @db.VarChar(255)
   password   String    @db.VarChar(255)
   coins      Int       @default(0)
   experience Int       @default(0)
