@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model sessions {
+  id              Int      @id @default(autoincrement())
+  session_id      String   @db.VarChar(255)
+  expiration_date DateTime @db.Date
+}
+
+model upgrades {
+  user_id      Int   @id
+  damage       Int?  @default(0)
+  attack_speed Int?  @default(0)
+  turret_cost  Int   @default(0)
+  users        users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "upgrades_ibfk_1")
+}
+
+model users {
+  id         Int       @id @default(autoincrement())
+  username   String    @db.VarChar(255)
+  email      String    @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  coins      Int       @default(0)
+  experience Int       @default(0)
+  upgrades   upgrades?
+  skins      skins?
+  levels     levels?
+  tempUp     tempUp?
+}
+
+model skins {
+  user_id Int @id
+  skin_id Int @default(0)
+  type    Int @default(1)
+  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "skins_ibfk_1")
+}
+
+model levels {
+  user_id   Int @id
+  level_id     Int @default(1)
+  difficulty Int @default(0)
+  users     users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "levels_ibfk_1")
+}
+
+model tempUp {
+  user_id Int @id
+  temp_upgrade_id Int @default(0)
+  amount  Int @default(0)
+  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "tempUp_ibfk_1")
+}
