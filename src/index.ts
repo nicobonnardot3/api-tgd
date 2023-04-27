@@ -1,15 +1,24 @@
+import { z } from "zod"
 import express from "express"
+import { PrismaClient } from "@prisma/client"
+import { login } from "./user/login"
+import { createUser } from "./user/createUser"
 
-const app = express()
-
-app.get("/", (_req, res) => {
-	res.send("Hello World!")
+export const User = z.object({
+	email: z.string().email(),
+	password: z.string().min(8),
+	username: z.string(),
+	coins: z.number().int().positive(),
+	experience: z.number().int().positive()
 })
 
-app.post("/create-user", (req, res) => {
-	console.log(req.body)
-	res.send("User created")
-})
+export const prisma = new PrismaClient()
+export const app = express()
+
+app.use(express.json())
+
+app.post("/login", login)
+app.post("/register", createUser)
 
 app.listen(3000, () => {
 	console.log("Server running on port 3000")

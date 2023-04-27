@@ -8,9 +8,10 @@ datasource db {
 }
 
 model sessions {
-  id              Int      @id @default(autoincrement())
+  user_id         Int
   session_id      String   @db.VarChar(255)
   expiration_date DateTime @db.Date
+  @@id([user_id, session_id])
 }
 
 model upgrades {
@@ -23,34 +24,40 @@ model upgrades {
 
 model users {
   id         Int       @id @default(autoincrement())
-  username   String    @db.VarChar(255)
-  email      String    @db.VarChar(255)
+  username   String    @db.VarChar(255) @unique
+  email      String    @db.VarChar(255) @unique
   password   String    @db.VarChar(255)
   coins      Int       @default(0)
   experience Int       @default(0)
+  levels     levels[]
+  skins      skins[]
+  tempUp     tempUp[]
   upgrades   upgrades?
-  skins      skins?
-  levels     levels?
-  tempUp     tempUp?
 }
 
 model skins {
-  user_id Int @id
-  skin_id Int @default(0)
-  type    Int @default(1)
-  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "skins_ibfk_1")
+  user_id   Int
+  skin_type String @db.VarChar(255)
+  type      Int    @default(1)
+  users     users  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "skins_user_id")
+
+  @@id([user_id, skin_type])
 }
 
 model levels {
-  user_id   Int @id
-  level_id     Int @default(1)
-  difficulty Int @default(0)
-  users     users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "levels_ibfk_1")
+  user_id    Int
+  level_id   Int
+  difficulty Int   @default(0)
+  users      users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "levels_user_id")
+
+  @@id([user_id, level_id])
 }
 
 model tempUp {
-  user_id Int @id
-  temp_upgrade_id Int @default(0)
-  amount  Int @default(0)
-  users   users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "tempUp_ibfk_1")
+  user_id         Int
+  temp_upgrade_id Int
+  amount          Int   @default(0)
+  users           users @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "tempup_users_id")
+
+  @@id([user_id, temp_upgrade_id])
 }
