@@ -1,5 +1,6 @@
 import { NextFunction } from "express"
 import jwt from "jsonwebtoken"
+require("dotenv").config()
 
 const verifyToken = (req: any, res, next: NextFunction) => {
 	const token = req.body?.access_token
