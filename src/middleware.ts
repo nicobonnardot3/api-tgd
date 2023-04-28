@@ -5,7 +5,7 @@ require("dotenv").config()
 
 const verifyToken = async (req: any, res, next: NextFunction) => {
 	const token = req.body?.access_token
-	if (!token) return res.status(403).send("A token is required")
+	if (!token) return res.status(403).send({ error: "A token is required" })
 
 	if (!process.env.TOKEN_KEY) throw new Error("TOKEN_KEY is not defined")
 	try {
@@ -32,7 +32,7 @@ const verifyToken = async (req: any, res, next: NextFunction) => {
 
 		req.user = decoded
 	} catch (err) {
-		return res.status(401).send("Invalid Token")
+		return res.status(401).send({ error: "Invalid Token" })
 	}
 	return next()
 }
