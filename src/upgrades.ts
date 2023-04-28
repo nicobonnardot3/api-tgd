@@ -2,7 +2,7 @@ import { prisma } from "./index"
 
 export async function upgrade(req, res) {
 	if (req.method === "GET") {
-		const upgrades = await prisma.upgrades.findMany({
+		const upgrades = await prisma.upgrades.findUnique({
 			where: { user_id: req.user.user_id },
 			select: {
 				damage: true,
