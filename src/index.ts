@@ -43,8 +43,32 @@ app.get("/welcome", (req, res) => {
 	res.status(200).send({ message: "Welcome to the API!" })
 })
 
-app.post("/welcome", middleware, (req: any, res) => {
-	res.status(200).send({ message: `Welcome ${req.user.username}!` })
+app.post("/playerInfo", middleware, async (req: any, res) => {
+	try {
+		const user = await prisma.users.findUnique({
+			where: { email: req.user.email },
+			select: {
+				id: true,
+				username: true,
+				email: true,
+				coins: true,
+				experience: true
+			}
+		})
+
+		if (!user) return res.status(500).send({ error: "Internal server error" })
+
+		res.status(200).send({
+			user_id: user.id,
+			username: user.username,
+			email: user.email,
+			coins: user.coins,
+			experience: user.experience
+		})
+	} catch (error) {
+		console.error(error)
+		return res.status(500).send({ error: "Internal server error" })
+	}
 })
 
 app.listen(4000, () => {
