@@ -8,6 +8,7 @@ import { level } from "./level"
 import { skin } from "./skins"
 import { tempup } from "./tempup"
 import { upgrade } from "./upgrades"
+import { userData } from "./userData"
 
 export const User = z.object({
 	email: z.string().email(),
@@ -28,6 +29,7 @@ app.post("/login", login)
 app.post("/register", register)
 
 app.get("/level", middleware, level)
+app.post("/level", middleware, level)
 app.put("/level", middleware, level)
 
 app.get("/skin", middleware, skin)
@@ -38,6 +40,8 @@ app.put("/tempup", middleware, tempup)
 
 app.get("/upgrade", middleware, upgrade)
 app.patch("/upgrade", middleware, upgrade)
+
+app.put("/userData", middleware, userData)
 
 app.get("/welcome", (req, res) => {
 	res.status(200).send({ message: "Welcome to the API!" })
