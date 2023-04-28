@@ -18,6 +18,8 @@ export async function skin(req, res) {
 
 			if (!skin_type || !type) return res.status(400).json({ error: "Invalid body" })
 
+			const newType = Number(type)
+
 			const skin = await prisma.skins.update({
 				where: {
 					user_id_skin_type: {
@@ -25,7 +27,7 @@ export async function skin(req, res) {
 						skin_type
 					}
 				},
-				data: { type },
+				data: { type: newType },
 				select: {
 					skin_type: true,
 					type: true
