@@ -9,12 +9,7 @@ const verifyToken = async (req: any, res, next: NextFunction) => {
 
 	if (!process.env.TOKEN_KEY) throw new Error("TOKEN_KEY is not defined")
 	try {
-		const decoded = jwt.verify(token, process.env.TOKEN_KEY) as JwtPayload & {
-			user_id: string
-			username: string
-			email: string
-			session_id: string
-		}
+		const decoded = jwt.verify(token, process.env.TOKEN_KEY) as JwtPayload
 
 		const result = await prisma.sessions.findUnique({
 			where: {
@@ -32,6 +27,7 @@ const verifyToken = async (req: any, res, next: NextFunction) => {
 
 		req.user = decoded
 	} catch (err) {
+		console.log(err)
 		return res.status(401).send({ error: "Invalid Token" })
 	}
 	return next()
