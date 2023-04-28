@@ -39,6 +39,10 @@ app.put("/tempup", middleware, tempup)
 app.get("/upgrade", middleware, upgrade)
 app.patch("/upgrade", middleware, upgrade)
 
+app.get("/welcome", (req, res) => {
+	res.status(200).send({ message: "Welcome to the API!" })
+})
+
 app.post("/welcome", middleware, (req: any, res) => {
 	res.status(200).send({ message: `Welcome ${req.user.username}!` })
 })
