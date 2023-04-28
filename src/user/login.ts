@@ -1,6 +1,7 @@
 import { createHash } from "crypto"
 import { User, prisma } from "../index"
 import jwt from "jsonwebtoken"
+require("dotenv").config()
 
 export async function login(req, res) {
 	if (!process.env.TOKEN_KEY) throw new Error("TOKEN_KEY is not defined")
