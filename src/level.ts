@@ -37,6 +37,34 @@ export async function level(req, res) {
 			return res.json(level)
 		}
 
+		if (req.method === "POST") {
+			const { user_id } = req.user
+			const { levels } = req.body
+
+			if (!levels) return res.status(400).json({ error: "Invalid body" })
+
+			const newLevels = levels.map(
+				async level =>
+					await prisma.levels.update({
+						where: {
+							user_id_level_id: {
+								user_id,
+								level_id: level.level_id
+							}
+						},
+						data: { difficulty: level.difficulty },
+						select: {
+							difficulty: true,
+							level_id: true
+						}
+					})
+			)
+
+			if (!newLevels) return res.status(500).json({ error: "Internal server error" })
+
+			return res.json(newLevels)
+		}
+
 		return res.status(405).json({ error: "Method not allowed" })
 	} catch (error) {
 		console.error(error)
